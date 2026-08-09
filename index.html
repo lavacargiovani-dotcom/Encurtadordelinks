@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoldenLink - Encurtador de Links Premium</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: #0d0d0d;
+            color: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Fundo Animado com Particulas */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #1a1508 0%, #0d0d0d 100%);
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(234, 179, 8, 0.25);
+            box-shadow: 0 0 12px rgba(234, 179, 8, 0.4);
+            animation: float 18s infinite ease-in-out;
+        }
+
+        .particle:nth-child(1) { width: 90px; height: 90px; top: 10%; left: 15%; animation-duration: 14s; }
+        .particle:nth-child(2) { width: 140px; height: 140px; top: 60%; left: 75%; animation-duration: 20s; }
+        .particle:nth-child(3) { width: 60px; height: 60px; top: 80%; left: 20%; animation-duration: 12s; }
+        .particle:nth-child(4) { width: 110px; height: 110px; top: 25%; left: 80%; animation-duration: 16s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; }
+            50% { transform: translateY(-35px) scale(1.1); opacity: 0.7; }
+        }
+
+        /* Navegacao Cabeçario */
+        header {
+            background: rgba(18, 18, 18, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(234, 179, 8, 0.25);
+            padding: 16px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fef08a 0%, #eab308 50%, #ca8a04 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+
+        nav ul {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+        }
+
+        nav a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        nav a:hover, nav a.active {
+            color: #fef08a;
+        }
+
+        /* Container Principal */
+        main {
+            max-width: 900px;
+            width: 90%;
+            margin: 40px auto;
+        }
+
+        .page-section {
+            display: none;
+            animation: fadeIn 0.5s forwards ease-in-out;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        /* Card Gold Premium */
+        .gold-card {
+            background: rgba(23, 23, 23, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(234, 179, 8, 0.3);
+            border-radius: 20px;
+            padding: 36px 28px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 15px rgba(234, 179, 8, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            background: linear-gradient(135deg, #fef08a 0%, #eab308 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+
+        h1 { font-size: 30px; font-weight: 800; }
+        h2 { font-size: 24px; margin-bottom: 20px; }
+
+        p.subtitle {
+            text-align: center;
+            color: #a1a1aa;
+            font-size: 15px;
+            margin-bottom: 28px;
+        }
+
+        /* Formulario de Encurtar */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        input[type="text"], input[type="email"], textarea {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(234, 179, 8, 0.25);
+            background-color: #0d0d0d;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus, input[type="email"]:focus, textarea:focus {
+            border-color: #eab308;
+            box-shadow: 0 0 12px rgba(234, 179, 8, 0.3);
+        }
+
+        .btn-gold {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #fef08a 0%, #eab308 50%, #ca8a04 100%);
+            color: #0d0d0d;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 20px rgba(234, 179, 8, 0.3);
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(234, 179, 8, 0.5);
+        }
+
+        .btn-gold:disabled {
+            background: #3f3f46;
+            color: #71717a;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Resultado */
+        .result-box {
+            margin-top: 24px;
+            padding: 20px;
+            background: #0d0d0d;
+            border: 1px solid #eab308;
+            border-radius: 12px;
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            text-align: center;
+        }
+
+        .result-box.active { display: flex; }
+
+        .short-url {
+            color: #fef08a;
+            font-size: 18px;
+            font-weight: bold;
+            word-break: break-all;
+        }
+
+        .btn-copy {
+            background: #27272a;
+            color: #fef08a;
+            border: 1px solid #eab308;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-copy:hover {
+            background: #eab308;
+            color: #0d0d0d;
+        }
+
+        .error-msg {
+            color: #f87171;
+            text-align: center;
+            margin-top: 14px;
+            display: none;
+            font-size: 14px;
+        }
+
+        /* Cards de Recursos e Sobre */
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .info-card {
+            background: rgba(13, 13, 13, 0.6);
+            border: 1px solid rgba(234, 179, 8, 0.2);
+            padding: 20px;
+            border-radius: 14px;
+            text-align: center;
+        }
+
+        .info-card h3 {
+            color: #fef08a;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .info-card p {
+            color: #a1a1aa;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* Rodape */
+        footer {
+            border-top: 1px solid rgba(234, 179, 8, 0.15);
+            background: #09090b;
+            padding: 20px;
+            text-align: center;
+            color: #71717a;
+            font-size: 13px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            nav ul { gap: 12px; }
+            nav a { font-size: 12px; }
+            .logo { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-animation">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <header>
+        <a href="#" class="logo" onclick="navegar('home')">GOLDENLINK</a>
+        <nav>
+            <ul>
+                <li><a id="nav-home" class="active" onclick="navegar('home')">Início</a></li>
+                <li><a id="nav-recursos" onclick="navegar('recursos')">Recursos</a></li>
+                <li><a id="nav-sobre" onclick="navegar('sobre')">Sobre Nós</a></li>
+                <li><a id="nav-contato" onclick="navegar('contato')">Contato</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- SECAO PRINCIPAL / ENCURTADOR -->
+        <section id="sec-home" class="page-section active">
+            <div class="gold-card">
+                <h1>Encurtador de Links Premium</h1>
+                <p class="subtitle">Otimize seus links com velocidade, elegancia e total seguranca.</p>
+
+                <div class="input-group">
+                    <input type="text" id="longUrl" placeholder="Cole a sua URL longa aqui (ex: https://site.com)...">
+                    <button id="btnEncurtar" class="btn-gold" onclick="encurtarLink()">Encurtar Link Agora</button>
+                </div>
+
+                <div id="errorMsg" class="error-msg">Nao foi possivel encurtar este link. Verifique o endereco digitado.</div>
+
+                <div id="resultBox" class="result-box">
+                    <span style="color: #a1a1aa; font-size: 12px; text-transform: uppercase;">Seu link gerado com sucesso:</span>
+                    <span id="shortUrl" class="short-url"></span>
+                    <button class="btn-copy" onclick="copiarLink()">Copiar Link Encurtado</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECAO RECURSOS -->
+        <section id="sec-recursos" class="page-section">
+            <div class="gold-card">
+                <h2>Recursos Exclusivos</h2>
+                <p class="subtitle">Por que escolher o GoldenLink para gerenciar suas URLs.</p>
+                
+                <div class="grid-cards">
+                    <div class="info-card">
+                        <h3>Velocidade Instantanea</h3>
+                        <p>Processamento em milissegundos sem filas de espera ou redirecionamentos lentos.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Sem Necessidade de Cadastro</h3>
+                        <p>Acesse e utilize a plataforma imediatamente, sem burocracias ou senhas.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Conexao Segura</h3>
+                        <p>Suporte completo a URLs criptografadas para proteger o acesso dos seus usuarios.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECAO SOBRE NOS -->
+        <section id="sec-sobre" class="page-section">
+            <div class="gold-card">
+                <h2>Sobre o GoldenLink</h2>
+                <p class="subtitle" style="margin-bottom: 16px;">Sua plataforma moderna para simplificar o compartilhamento na web.</p>
+                <p style="color: #d4d4d8; line-height: 1.6; text-align: center; font-size: 14px;">
+                    O GoldenLink foi criado com o objetivo de oferecer uma ferramenta simples, rapida e com acabamento de alto nivel. Desenvolvido para criadores de conteudo, profissionais digitais e usuarios que buscam dinamismo e elegancia ao enviar seus links.
+                </p>
+            </div>
+        </section>
+
+        <!-- SECAO CONTATO -->
+        <section id="sec-contato" class="page-section">
+            <div class="gold-card">
+                <h2>Fale Conosco</h2>
+                <p class="subtitle">Duvidas, sugestoes ou feedback? Envie sua mensagem.</p>
+                
+                <form onsubmit="event.preventDefault(); alert('Mensagem enviada com sucesso!');" class="input-group">
+                    <input type="text" placeholder="Seu Nome" required>
+                    <input type="email" placeholder="Seu E-mail" required>
+                    <textarea rows="4" placeholder="Sua Mensagem..." required></textarea>
+                    <button type="submit" class="btn-gold">Enviar Mensagem</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Code Maker Sites &copy; GoldenLink. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        // Navegacao entre abas (Single Page Application)
+        function navegar(pagina) {
+            document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+
+            document.getElementById(`sec-${pagina}`).classList.add('active');
+            document.getElementById(`nav-${pagina}`).classList.add('active');
+        }
+
+        // Funcao para Encurtar Link via API funcional do da.gd
+        async function encurtarLink() {
+            const input = document.getElementById('longUrl').value.trim();
+            const btn = document.getElementById('btnEncurtar');
+            const resultBox = document.getElementById('resultBox');
+            const shortUrlSpan = document.getElementById('shortUrl');
+            const errorMsg = document.getElementById('errorMsg');
+
+            if (!input) {
+                mostrarErro('Por favor, cole um link para encurtar.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = 'Processando...';
+            errorMsg.style.display = 'none';
+            resultBox.classList.remove('active');
+
+            try {
+                const response = await fetch(`https://da.gd/s?url=${encodeURIComponent(input)}`);
+                
+                if (response.ok) {
+                    const text = await response.text();
+                    shortUrlSpan.innerText = text.trim();
+                    resultBox.classList.add('active');
+                } else {
+                    throw new Error();
+                }
+            } catch (e) {
+                mostrarErro('Nao foi possivel encurtar este link. Verifique o endereco ou tente outro.');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Encurtar Link Agora';
+            }
+        }
+
+        function copiarLink() {
+            const shortUrl = document.getElementById('shortUrl').innerText;
+            navigator.clipboard.writeText(shortUrl).then(() => {
+                const btn = document.querySelector('.btn-copy');
+                const originalText = btn.innerText;
+                btn.innerText = 'Copiado!';
+                setTimeout(() => btn.innerText = originalText, 2000);
+            }).catch(() => {
+                alert('Erro ao copiar link.');
+            });
+        }
+
+        function mostrarErro(mensagem) {
+            const errorMsg = document.getElementById('errorMsg');
+            errorMsg.innerText = mensagem;
+            errorMsg.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
